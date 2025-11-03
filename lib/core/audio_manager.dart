@@ -6,54 +6,93 @@ class AudioManager {
   AudioManager._internal();
 
   final AudioPlayer _musicPlayer = AudioPlayer();
-  final AudioPlayer _soundEffectPlayer = AudioPlayer();
-  
-  bool _isMusicEnabled = true;
-  bool _isSoundEnabled = true;
+  final AudioPlayer _sfxPlayer = AudioPlayer();
 
-  bool get isMusicEnabled => _isMusicEnabled;
-  bool get isSoundEnabled => _isSoundEnabled;
+  bool _musicEnabled = true;
+  bool _sfxEnabled = true;
 
-  Future<void> playMusic(String path, {bool loop = true}) async {
-    if (!_isMusicEnabled) return;
+  bool get isMusicEnabled => _musicEnabled;
+  bool get isSoundEnabled => _sfxEnabled;
+
+  // Asset paths (ensure these exist in pubspec assets)
+  static const String _bgMusic = 'assets/audio/music_bg.mp3';
+  static const String _tapSfx = 'assets/audio/tap.wav';
+  static const String _collisionSfx = 'assets/audio/crash.mp3';
+  static const String _scoreSfx = 'assets/audio/score.wav';
+
+  Future<void> init() async {
+    // Configure players
+    await _musicPlayer.setReleaseMode(ReleaseMode.loop);
+    await _sfxPlayer.setReleaseMode(ReleaseMode.stop);
+  }
+
+  // Background music
+  Future<void> playBackgroundMusic() async {
+    if (!_musicEnabled) return;
     try {
-      await _musicPlayer.play(AssetSource(path));
-      if (loop) {
-        await _musicPlayer.setReleaseMode(ReleaseMode.loop);
-      }
+      await _musicPlayer.play(AssetSource(_bgMusic));
+      await _musicPlayer.setReleaseMode(ReleaseMode.loop);
     } catch (e) {
-      // Handle audio errors gracefully
-      print('Error playing music: $e');
+      print('AudioManager: failed to play bg music: $e');
     }
   }
 
-  Future<void> playSound(String path) async {
-    if (!_isSoundEnabled) return;
+  Future<void> stopBackgroundMusic() async {
     try {
-      await _soundEffectPlayer.play(AssetSource(path));
+      await _musicPlayer.stop();
+    } catch (_) {}
+  }
+
+  // Sound effects
+  Future<void> playTap() async {
+    if (!_sfxEnabled) return;
+    try {
+      await _sfxPlayer.play(AssetSource(_tapSfx));
     } catch (e) {
-      // Handle audio errors gracefully
-      print('Error playing sound: $e');
+      print('AudioManager: failed to play tap: $e');
     }
   }
 
-  Future<void> stopMusic() async {
-    await _musicPlayer.stop();
+  Future<void> playCollision() async {
+    if (!_sfxEnabled) return;
+    try {
+      await _sfxPlayer.play(AssetSource(_collisionSfx));
+    } catch (e) {
+      print('AudioManager: failed to play collision: $e');
+    }
   }
 
-  void setMusicEnabled(bool enabled) {
-    _isMusicEnabled = enabled;
+  Future<void> playScore() async {
+    if (!_sfxEnabled) return;
+    try {
+      await _sfxPlayer.play(AssetSource(_scoreSfx));
+    } catch (e) {
+      print('AudioManager: failed to play score: $e');
+    }
+  }
+
+  // Toggles
+  Future<void> setMusicEnabled(bool enabled) async {
+    _musicEnabled = enabled;
     if (!enabled) {
-      stopMusic();
+      await stopBackgroundMusic();
+    } else {
+      await playBackgroundMusic();
     }
   }
 
   void setSoundEnabled(bool enabled) {
-    _isSoundEnabled = enabled;
+    _sfxEnabled = enabled;
+  }
+
+  // Convenience master toggle
+  Future<void> setMuted(bool muted) async {
+    await setMusicEnabled(!muted);
+    setSoundEnabled(!muted);
   }
 
   void dispose() {
     _musicPlayer.dispose();
-    _soundEffectPlayer.dispose();
+    _sfxPlayer.dispose();
   }
 }

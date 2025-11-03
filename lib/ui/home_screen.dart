@@ -5,6 +5,8 @@ import '../core/game_provider.dart';
 import '../gameplay/game_scene.dart';
 import 'game_over_screen.dart';
 import 'pause_overlay.dart';
+import '../core/audio_manager.dart';
+import '../core/audio_manager.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,8 +31,12 @@ class _HomeScreenState extends State<HomeScreen> {
       _providerListener = () {
         if (!gameProvider.isPlaying || gameProvider.isPaused) {
           _gameScene?.pauseEngine();
+          // Stop music when paused or not playing
+          AudioManager().stopBackgroundMusic();
         } else {
           _gameScene?.resumeEngine();
+          // Start/ensure background music when playing
+          AudioManager().playBackgroundMusic();
         }
       };
       gameProvider.addListener(_providerListener!);

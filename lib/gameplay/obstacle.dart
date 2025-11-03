@@ -22,7 +22,8 @@ class Obstacle extends PositionComponent with HasGameRef, CollisionCallbacks {
     required this.side,
     required this.gameSpeed,
     required this.onPlayerCollision,
-  })  : _obstacleColor = side == PlayerSide.left ? Colors.red : Colors.orange,
+    Color? color,
+  })  : _obstacleColor = color ?? (side == PlayerSide.left ? Colors.red : Colors.orange),
         _fillPaint = Paint()..style = PaintingStyle.fill,
         _borderPaint = Paint()
           ..color = Colors.white
@@ -114,7 +115,7 @@ class Obstacle extends PositionComponent with HasGameRef, CollisionCallbacks {
       _hasCollided = true;
       
       // Play collision sound
-      AudioManager().playSound('sounds/crash.mp3').catchError((e) {
+      AudioManager().playCollision().catchError((e) {
         // Fallback: log error if sound file doesn't exist
         // In production, you would have actual sound files in assets
         print('Could not play crash sound: $e');

@@ -86,6 +86,15 @@ class GameProvider extends ChangeNotifier {
     }
   }
 
+  /// Smoothly adjust game speed by a delta, clamped to [1.0, 3.0]
+  void adjustGameSpeed(double delta) {
+    final newSpeed = (_gameSpeed + delta).clamp(1.0, 3.0);
+    if (newSpeed != _gameSpeed) {
+      _gameSpeed = newSpeed;
+      notifyListeners();
+    }
+  }
+
   /// Increment score and update high score if necessary
   void incrementScore(int points) {
     if (_isPlaying) {

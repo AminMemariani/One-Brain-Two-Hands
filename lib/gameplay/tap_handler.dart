@@ -1,6 +1,7 @@
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'player.dart';
+import '../core/audio_manager.dart';
 
 class TapHandler extends Component with HasGameRef, TapCallbacks {
   final Player leftPlayer;
@@ -25,10 +26,12 @@ class TapHandler extends Component with HasGameRef, TapCallbacks {
 
     // Left half of screen controls left player
     if (tapX < screenWidth / 2) {
+      AudioManager().playTap();
       leftPlayer.toggleLane();
     }
     // Right half of screen controls right player
     else {
+      AudioManager().playTap();
       rightPlayer.toggleLane();
     }
 
