@@ -36,10 +36,10 @@ class PauseOverlay extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
+                // Return to home
                 gameProvider.resetScore();
-                Navigator.of(context).pop();
               },
-              child: const Text('Quit'),
+              child: const Text('Home'),
             ),
           ],
         ),

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../core/game_provider.dart';
-import 'home_screen.dart';
 
 class GameOverScreen extends StatelessWidget {
   const GameOverScreen({super.key});
@@ -41,11 +40,6 @@ class GameOverScreen extends StatelessWidget {
             ElevatedButton(
               onPressed: () {
                 gameProvider.startGame();
-                Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(
-                    builder: (context) => const HomeScreen(),
-                  ),
-                );
               },
               child: const Text('Play Again'),
             ),
