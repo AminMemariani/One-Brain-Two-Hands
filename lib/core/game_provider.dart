@@ -8,6 +8,10 @@ class GameProvider extends ChangeNotifier {
   int _score = 0;
   int _highScore = 0;
   double _gameSpeed = 1.0;
+  double _elapsedSeconds = 0.0;
+  final Set<String> _achievements = <String>{};
+  bool _adsRemoved = false;
+  int _pendingBonusScore = 0;
 
   // Getters
   bool get isPlaying => _isPlaying;
@@ -15,12 +19,17 @@ class GameProvider extends ChangeNotifier {
   int get score => _score;
   int get highScore => _highScore;
   double get gameSpeed => _gameSpeed;
+  double get elapsedSeconds => _elapsedSeconds;
+  Set<String> get achievements => _achievements;
+  bool get adsRemoved => _adsRemoved;
 
   // Legacy getter for compatibility
   bool get isGameOver => !_isPlaying && _score > 0;
 
   GameProvider() {
     _loadHighScore();
+    _loadAdsRemoved();
+    _loadAchievements();
   }
 
   /// Load high score from SharedPreferences
@@ -36,12 +45,40 @@ class GameProvider extends ChangeNotifier {
     await prefs.setInt('high_score', _highScore);
   }
 
+  Future<void> _loadAdsRemoved() async {
+    final prefs = await SharedPreferences.getInstance();
+    _adsRemoved = prefs.getBool('ads_removed') ?? false;
+  }
+
+  Future<void> _saveAdsRemoved() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('ads_removed', _adsRemoved);
+  }
+
+  Future<void> _loadAchievements() async {
+    final prefs = await SharedPreferences.getInstance();
+    final list = prefs.getStringList('achievements') ?? <String>[];
+    _achievements
+      ..clear()
+      ..addAll(list);
+  }
+
+  Future<void> _saveAchievements() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setStringList('achievements', _achievements.toList());
+  }
+
   /// Start a new game
   void startGame() {
     _isPlaying = true;
     _isPaused = false;
     _score = 0;
+    _elapsedSeconds = 0.0;
     _gameSpeed = 1.0;
+    if (_pendingBonusScore > 0) {
+      _score += _pendingBonusScore;
+      _pendingBonusScore = 0;
+    }
     notifyListeners();
   }
 
@@ -110,12 +147,25 @@ class GameProvider extends ChangeNotifier {
     }
   }
 
+  /// Track elapsed time for achievements
+  void incrementElapsed(double dtSeconds) {
+    if (!_isPlaying) return;
+    _elapsedSeconds += dtSeconds;
+    // Achievement: survive 30 seconds
+    if (_elapsedSeconds >= 30.0 && !_achievements.contains('survive_30s')) {
+      _achievements.add('survive_30s');
+      _saveAchievements();
+      notifyListeners();
+    }
+  }
+
   /// Reset game state (for compatibility with existing code)
   void resetScore() {
     _score = 0;
     _isPlaying = false;
     _isPaused = false;
     _gameSpeed = 1.0;
+    _elapsedSeconds = 0.0;
     notifyListeners();
   }
 
@@ -127,6 +177,19 @@ class GameProvider extends ChangeNotifier {
       _isPlaying = false;
       notifyListeners();
     }
+  }
+
+  /// Stub: Remove ads locally
+  Future<void> removeAdsLocally() async {
+    _adsRemoved = true;
+    await _saveAdsRemoved();
+    notifyListeners();
+  }
+
+  /// Local-only rewarded bonus: grant extra points on next start
+  void grantNextRunBonus(int bonus) {
+    _pendingBonusScore = bonus;
+    notifyListeners();
   }
 
   /// Toggle pause state (for compatibility with existing code)

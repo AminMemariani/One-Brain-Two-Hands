@@ -27,6 +27,8 @@ class ObstacleSpawner extends Component with HasGameRef<GameScene> {
     if (!gameProvider.isPlaying || gameProvider.isPaused) {
       return;
     }
+    // Track elapsed time for achievements
+    gameProvider.incrementElapsed(dt);
     
     // Update spawn timer
     _spawnTimer += dt;

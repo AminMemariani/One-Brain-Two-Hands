@@ -6,7 +6,6 @@ import '../gameplay/game_scene.dart';
 import 'game_over_screen.dart';
 import 'pause_overlay.dart';
 import '../core/audio_manager.dart';
-import '../core/audio_manager.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -102,6 +101,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         child: Text('Play'),
                       ),
                     ),
+                    const SizedBox(height: 12),
+                    if (!gameProvider.adsRemoved)
+                      OutlinedButton(
+                        onPressed: () {
+                          // Local-only remove ads stub
+                          gameProvider.removeAdsLocally();
+                        },
+                        child: const Text('Remove Ads'),
+                      )
+                    else
+                      const Text(
+                        'Ads removed',
+                        style: TextStyle(color: Colors.greenAccent),
+                      ),
                   ],
                 ),
               ),
