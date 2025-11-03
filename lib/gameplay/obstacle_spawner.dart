@@ -8,7 +8,8 @@ import 'player.dart';
 class ObstacleSpawner extends Component with HasGameRef<GameScene> {
   final GameScene gameScene;
   final GameProvider gameProvider;
-  final math.Random _random = math.Random();
+  late math.Random _random;
+  final int? seed;
   
   double _spawnTimer = 0.0;
   double _baseSpawnInterval = 2.0; // Base interval in seconds
@@ -17,6 +18,7 @@ class ObstacleSpawner extends Component with HasGameRef<GameScene> {
   ObstacleSpawner({
     required this.gameScene,
     required this.gameProvider,
+    this.seed,
   });
   
   @override
@@ -41,6 +43,12 @@ class ObstacleSpawner extends Component with HasGameRef<GameScene> {
       _spawnRandomObstacles();
       _spawnTimer = 0.0; // Reset timer
     }
+  }
+
+  @override
+  Future<void> onLoad() async {
+    super.onLoad();
+    _random = seed != null ? math.Random(seed) : math.Random();
   }
   
   /// Calculate spawn interval based on game speed

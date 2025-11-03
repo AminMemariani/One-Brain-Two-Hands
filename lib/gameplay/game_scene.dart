@@ -85,6 +85,7 @@ class GameScene extends FlameGame with HasCollisionDetection {
     _obstacleSpawner = ObstacleSpawner(
       gameScene: this,
       gameProvider: provider,
+      seed: provider.isDailyChallenge ? provider.dailySeed : null,
     );
     add(_obstacleSpawner!);
   }

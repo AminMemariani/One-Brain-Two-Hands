@@ -91,6 +91,59 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: Colors.white70,
                       ),
                     ),
+                    const SizedBox(height: 16),
+                    // Mode selection
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white10,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ChoiceChip(
+                            label: const Text('Endless'),
+                            selected: gameProvider.gameMode == GameMode.endless,
+                            onSelected: (_) =>
+                                gameProvider.setGameMode(GameMode.endless),
+                          ),
+                          const SizedBox(width: 8),
+                          ChoiceChip(
+                            label: const Text('Timed'),
+                            selected: gameProvider.gameMode == GameMode.timed,
+                            onSelected: (_) =>
+                                gameProvider.setGameMode(GameMode.timed),
+                          ),
+                          if (gameProvider.gameMode == GameMode.timed) ...[
+                            const SizedBox(width: 12),
+                            Text(
+                              '${gameProvider.timedModeSeconds}s',
+                              style: const TextStyle(color: Colors.white70),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    // Daily challenge toggle
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Switch(
+                          value: gameProvider.isDailyChallenge,
+                          onChanged: (v) => gameProvider.setDailyChallenge(v),
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Daily Challenge',
+                          style: TextStyle(color: Colors.white70),
+                        ),
+                      ],
+                    ),
                     const SizedBox(height: 32),
                     ElevatedButton(
                       onPressed: () {

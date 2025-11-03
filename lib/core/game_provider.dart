@@ -12,6 +12,9 @@ class GameProvider extends ChangeNotifier {
   final Set<String> _achievements = <String>{};
   bool _adsRemoved = false;
   int _pendingBonusScore = 0;
+  bool _isDailyChallenge = false;
+  GameMode _gameMode = GameMode.endless;
+  int _timedModeSeconds = 60;
 
   // Getters
   bool get isPlaying => _isPlaying;
@@ -22,6 +25,10 @@ class GameProvider extends ChangeNotifier {
   double get elapsedSeconds => _elapsedSeconds;
   Set<String> get achievements => _achievements;
   bool get adsRemoved => _adsRemoved;
+  bool get isDailyChallenge => _isDailyChallenge;
+  GameMode get gameMode => _gameMode;
+  int get timedModeSeconds => _timedModeSeconds;
+  int get dailySeed => DateTime.now().day;
 
   // Legacy getter for compatibility
   bool get isGameOver => !_isPlaying && _score > 0;
@@ -157,6 +164,10 @@ class GameProvider extends ChangeNotifier {
       _saveAchievements();
       notifyListeners();
     }
+    // Timed mode: end game at limit
+    if (_gameMode == GameMode.timed && _elapsedSeconds >= _timedModeSeconds) {
+      endGame();
+    }
   }
 
   /// Reset game state (for compatibility with existing code)
@@ -209,4 +220,22 @@ class GameProvider extends ChangeNotifier {
       resumeGame();
     }
   }
+
+  // Game options
+  void setDailyChallenge(bool enabled) {
+    _isDailyChallenge = enabled;
+    notifyListeners();
+  }
+
+  void setGameMode(GameMode mode) {
+    _gameMode = mode;
+    notifyListeners();
+  }
+
+  void setTimedModeSeconds(int seconds) {
+    _timedModeSeconds = seconds.clamp(10, 600);
+    notifyListeners();
+  }
 }
+
+enum GameMode { endless, timed }
