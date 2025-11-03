@@ -4,11 +4,16 @@ import '../core/game_provider.dart';
 import '../core/audio_manager.dart';
 import '../gameplay/game_scene.dart';
 
-class PauseOverlay extends StatelessWidget {
+class PauseOverlay extends StatefulWidget {
   final GameScene? game;
 
   const PauseOverlay({super.key, this.game});
 
+  @override
+  State<PauseOverlay> createState() => _PauseOverlayState();
+}
+
+class _PauseOverlayState extends State<PauseOverlay> {
   @override
   Widget build(BuildContext context) {
     final gameProvider = Provider.of<GameProvider>(context);
@@ -47,6 +52,7 @@ class PauseOverlay extends StatelessWidget {
                             value: AudioManager().isMusicEnabled,
                             onChanged: (v) async {
                               await AudioManager().setMusicEnabled(v);
+                              if (mounted) setState(() {});
                             },
                           ),
                         ],
@@ -67,6 +73,7 @@ class PauseOverlay extends StatelessWidget {
                             value: AudioManager().isSoundEnabled,
                             onChanged: (v) {
                               AudioManager().setSoundEnabled(v);
+                              if (mounted) setState(() {});
                             },
                           ),
                         ],
@@ -79,7 +86,7 @@ class PauseOverlay extends StatelessWidget {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                game?.resumeGame();
+                widget.game?.resumeGame();
               },
               child: const Text('Resume'),
             ),

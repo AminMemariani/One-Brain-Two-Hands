@@ -15,6 +15,10 @@ class Obstacle extends PositionComponent with HasGameRef, CollisionCallbacks {
   final Color _obstacleColor;
   final Paint _fillPaint;
   final Paint _borderPaint;
+  final Paint _patternPaint = Paint()
+    ..color = Colors.white.withOpacity(0.3)
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.0;
 
   Obstacle({
     required Vector2 position,
@@ -85,21 +89,16 @@ class Obstacle extends PositionComponent with HasGameRef, CollisionCallbacks {
   
   void _drawPattern(Canvas canvas, Rect rect) {
     // Draw diagonal stripes for visual interest
-    final patternPaint = Paint()
-      ..color = Colors.white.withOpacity(0.3)
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 1.0;
-    
     // Draw two diagonal lines
     canvas.drawLine(
       Offset(rect.left, rect.top),
       Offset(rect.right, rect.bottom),
-      patternPaint,
+      _patternPaint,
     );
     canvas.drawLine(
       Offset(rect.left, rect.bottom),
       Offset(rect.right, rect.top),
-      patternPaint,
+      _patternPaint,
     );
   }
 
