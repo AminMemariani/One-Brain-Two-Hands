@@ -8,8 +8,8 @@ class AudioManager {
   final AudioPlayer _musicPlayer = AudioPlayer();
   final AudioPlayer _sfxPlayer = AudioPlayer();
 
-  bool _musicEnabled = true;
-  bool _sfxEnabled = true;
+  bool _musicEnabled = false; // Disabled by default
+  bool _sfxEnabled = false; // Disabled by default
 
   bool get isMusicEnabled => _musicEnabled;
   bool get isSoundEnabled => _sfxEnabled;

@@ -39,7 +39,7 @@ void main() {
   });
 
   test('GameScene calculateLaneY returns correct positions', () async {
-    final scene = GameScene();
+      final _ = GameScene();
     // Note: calculateLaneY uses size which requires game to be properly initialized
     // This test verifies the logic works when size is available
     // For unit testing, we'll skip this as it requires full game setup

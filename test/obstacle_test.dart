@@ -1,6 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flame/components.dart';
-import 'package:one_brain_two_hands/gameplay/obstacle.dart';
 import 'package:one_brain_two_hands/gameplay/player.dart';
 
 class _DummyPlayer extends Player {
