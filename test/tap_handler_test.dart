@@ -1,13 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:one_brain_two_hands/gameplay/tap_handler.dart';
-import 'package:one_brain_two_hands/gameplay/player.dart';
-import 'package:flame/components.dart';
-import 'package:flame/game.dart';
 
-class _MockGame extends FlameGame {
-  @override
-  Vector2 get size => Vector2(800, 600);
-}
 
 void main() {
   setUpAll(() {
