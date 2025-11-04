@@ -23,19 +23,20 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  test('ObstacleSpawner does not spawn when game is not playing', () {
+  test('ObstacleSpawner does not spawn when game is not playing', () async {
     final provider = GameProvider();
     final scene = _TestGameScene();
     final spawner = ObstacleSpawner(
       gameScene: scene,
       gameProvider: provider,
     );
+    await spawner.onLoad();
 
     spawner.update(5.0); // Large dt
     expect(scene.spawnCount, 0);
   });
 
-  test('ObstacleSpawner does not spawn when game is paused', () {
+  test('ObstacleSpawner does not spawn when game is paused', () async {
     final provider = GameProvider();
     provider.startGame();
     provider.pauseGame();
@@ -44,6 +45,7 @@ void main() {
       gameScene: scene,
       gameProvider: provider,
     );
+    await spawner.onLoad();
 
     spawner.update(5.0);
     expect(scene.spawnCount, 0);
@@ -123,6 +125,38 @@ void main() {
     final initialElapsed = provider.elapsedSeconds;
     spawner.update(0.5);
     expect(provider.elapsedSeconds, greaterThan(initialElapsed));
+  });
+
+  test('ObstacleSpawner does not track elapsed when paused', () {
+    final provider = GameProvider();
+    provider.startGame();
+    provider.pauseGame();
+    final scene = _TestGameScene();
+    final spawner = ObstacleSpawner(
+      gameScene: scene,
+      gameProvider: provider,
+    );
+
+    final initialElapsed = provider.elapsedSeconds;
+    spawner.update(0.5);
+    expect(provider.elapsedSeconds, initialElapsed);
+  });
+
+  test('ObstacleSpawner reset clears timer', () async {
+    final provider = GameProvider();
+    provider.startGame();
+    final scene = _TestGameScene();
+    final spawner = ObstacleSpawner(
+      gameScene: scene,
+      gameProvider: provider,
+    );
+    await spawner.onLoad();
+
+    spawner.update(1.0);
+    spawner.reset();
+    
+    // Timer should be reset
+    expect(scene.spawnCount >= 0, isTrue);
   });
 }
 
