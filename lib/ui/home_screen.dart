@@ -17,18 +17,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   GameScene? _gameScene;
   VoidCallback? _providerListener;
+  GameProvider? _gameProvider;
 
   @override
   void initState() {
     super.initState();
     _gameScene = GameScene();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final gameProvider = Provider.of<GameProvider>(context, listen: false);
-      _gameScene!.initializeWithProvider(gameProvider);
+      _gameProvider = Provider.of<GameProvider>(context, listen: false);
+      _gameScene!.initializeWithProvider(_gameProvider!);
 
       // Listen to provider changes to pause/resume Flame engine
       _providerListener = () {
-        if (!gameProvider.isPlaying || gameProvider.isPaused) {
+        if (!_gameProvider!.isPlaying || _gameProvider!.isPaused) {
           _gameScene?.pauseEngine();
           // Stop music when paused or not playing
           AudioManager().stopBackgroundMusic();
@@ -38,10 +39,10 @@ class _HomeScreenState extends State<HomeScreen> {
           AudioManager().playBackgroundMusic();
         }
       };
-      gameProvider.addListener(_providerListener!);
+      _gameProvider!.addListener(_providerListener!);
 
       // Set initial engine state
-      if (!gameProvider.isPlaying || gameProvider.isPaused) {
+      if (!_gameProvider!.isPlaying || _gameProvider!.isPaused) {
         _gameScene?.pauseEngine();
       } else {
         _gameScene?.resumeEngine();
@@ -51,9 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    final gameProvider = Provider.of<GameProvider>(context, listen: false);
-    if (_providerListener != null) {
-      gameProvider.removeListener(_providerListener!);
+    if (_providerListener != null && _gameProvider != null) {
+      _gameProvider!.removeListener(_providerListener!);
       _providerListener = null;
     }
     super.dispose();
@@ -64,6 +64,11 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       body: Consumer<GameProvider>(
         builder: (context, gameProvider, child) {
+          // Show game over UI first if game is over
+          if (gameProvider.isGameOver) {
+            return const GameOverScreen();
+          }
+          
           // Show home UI when not playing
           if (!gameProvider.isPlaying) {
             return Container(
@@ -172,11 +177,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             );
-          }
-
-          // Show game over UI
-          if (gameProvider.isGameOver) {
-            return const GameOverScreen();
           }
 
           // In-game UI

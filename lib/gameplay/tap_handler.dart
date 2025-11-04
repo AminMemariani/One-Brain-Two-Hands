@@ -24,10 +24,11 @@ class TapHandler extends PositionComponent with HasGameRef, TapCallbacks {
 
   @override
   bool onTapDown(TapDownEvent event) {
-    return _handleInput(event.localPosition);
+    return handleInput(event.localPosition);
   }
 
-  bool _handleInput(Vector2 localPosition) {
+  // Public for testing
+  bool handleInput(Vector2 localPosition) {
     if (shouldHandleTap != null && !shouldHandleTap!()) {
       return false;
     }
