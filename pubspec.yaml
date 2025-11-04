@@ -73,11 +73,11 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  assets:
-    - assets/audio/music_bg.mp3
-    - assets/audio/tap.wav
-    - assets/audio/crash.mp3
-    - assets/audio/score.wav
+  #assets:
+  #  - assets/audio/music_bg.mp3
+  #  - assets/audio/tap.wav
+  #  - assets/audio/crash.mp3
+  #  - assets/audio/score.wav
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

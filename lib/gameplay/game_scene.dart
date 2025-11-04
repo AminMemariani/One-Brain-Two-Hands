@@ -11,8 +11,8 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 class GameScene extends FlameGame with HasCollisionDetection {
-  late Player leftPlayer;
-  late Player rightPlayer;
+  Player? leftPlayer;
+  Player? rightPlayer;
   GameProvider? gameProvider;
   ObstacleSpawner? _obstacleSpawner;
   late PlayerSkin _leftSkin;
@@ -45,7 +45,7 @@ class GameScene extends FlameGame with HasCollisionDetection {
       totalLanes: totalLanes,
       skin: _leftSkin,
     );
-    add(leftPlayer);
+    add(leftPlayer!);
     
     // Initialize right player (right side of screen)
     rightPlayer = Player(
@@ -55,10 +55,20 @@ class GameScene extends FlameGame with HasCollisionDetection {
       totalLanes: totalLanes,
       skin: _rightSkin,
     );
-    add(rightPlayer);
+    add(rightPlayer!);
     
-    // Add tap handler for controlling players
-    // Will be re-added after gameProvider is initialized
+    // Add tap handler if gameProvider is already initialized
+    if (gameProvider != null) {
+      add(
+        TapHandler(
+          leftPlayer: leftPlayer!,
+          rightPlayer: rightPlayer!,
+          shouldHandleTap: () =>
+              gameProvider?.isPlaying == true &&
+              gameProvider?.isPaused == false,
+        ),
+      );
+    }
   }
   
   @override
@@ -74,12 +84,18 @@ class GameScene extends FlameGame with HasCollisionDetection {
   void initializeWithProvider(GameProvider provider) {
     gameProvider = provider;
     
-    // Add tap handler now that gameProvider is available
-    add(TapHandler(
-      leftPlayer: leftPlayer,
-      rightPlayer: rightPlayer,
-      shouldHandleTap: () => gameProvider?.isPlaying == true && gameProvider?.isPaused == false,
-    ));
+    // Add tap handler now that gameProvider is available (only if players are loaded)
+    if (leftPlayer != null && rightPlayer != null) {
+      add(
+        TapHandler(
+          leftPlayer: leftPlayer!,
+          rightPlayer: rightPlayer!,
+          shouldHandleTap: () =>
+              gameProvider?.isPlaying == true &&
+              gameProvider?.isPaused == false,
+        ),
+      );
+    }
     
     // Initialize obstacle spawner with timer-based spawning
     _obstacleSpawner = ObstacleSpawner(
@@ -118,14 +134,14 @@ class GameScene extends FlameGame with HasCollisionDetection {
   }
 
   void updateScore(int points) {
-    if (gameProvider != null) {
+    if (gameProvider != null && leftPlayer != null && rightPlayer != null) {
       gameProvider!.incrementScore(points);
       // Play score SFX
       // ignore: unused_result
       AudioManager().playScore();
       // Particle bursts near both players
-      _spawnScoreParticles(leftPlayer.position);
-      _spawnScoreParticles(rightPlayer.position);
+      _spawnScoreParticles(leftPlayer!.position);
+      _spawnScoreParticles(rightPlayer!.position);
     }
   }
 
