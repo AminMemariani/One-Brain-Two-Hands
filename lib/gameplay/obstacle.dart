@@ -54,12 +54,17 @@ class Obstacle extends PositionComponent with HasGameRef, CollisionCallbacks {
       return;
     }
     
-    // Move obstacle from top downward toward the player
+    // Move obstacle horizontally toward the player
+    // Left side obstacles come from right (move left)
+    // Right side obstacles come from left (move right)
     double speed = _baseSpeed * gameSpeed;
-    position.y += speed * dt;
+    double direction = side == PlayerSide.left ? -1.0 : 1.0;
+    position.x += speed * direction * dt;
     
-    // Remove if off screen at the bottom
-    if (position.y > gameRef.size.y + size.y) {
+    // Remove if off screen on the opposite side
+    if (side == PlayerSide.left && position.x + size.x < 0) {
+      removeFromParent();
+    } else if (side == PlayerSide.right && position.x > gameRef.size.x) {
       removeFromParent();
     }
   }

@@ -103,6 +103,7 @@ class Player extends PositionComponent with HasGameRef, CollisionCallbacks {
     await super.onLoad();
     
     // Calculate initial X position based on side
+    // Players stay fixed horizontally, only move vertically between lanes
     double xPosition = side == PlayerSide.left 
         ? gameRef.size.x * 0.25 
         : gameRef.size.x * 0.75;
@@ -110,6 +111,8 @@ class Player extends PositionComponent with HasGameRef, CollisionCallbacks {
     // Calculate initial Y position (middle lane)
     _targetY = _calculateLaneY(_currentLane);
     position = Vector2(xPosition, _targetY);
+    
+    // Players are fixed horizontally - they only move vertically between lanes
     
     // Add simple rectangular collision box
     add(RectangleHitbox());

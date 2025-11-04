@@ -106,24 +106,34 @@ class GameScene extends FlameGame with HasCollisionDetection {
     add(_obstacleSpawner!);
   }
   
-  /// Calculate Y position for a lane (for obstacle spawning from top)
+  /// Calculate Y position for a lane (for obstacle spawning from sides)
   double calculateLaneY(int lane) {
     double laneHeight = (size.y - 60) / (totalLanes - 1);
     return lane * laneHeight + 30;
   }
   
   /// Spawn an obstacle at a specific lane for a player side
+  /// Obstacles now come from the sides horizontally toward players
   void spawnObstacle(PlayerSide side, int lane) {
+    // Calculate Y position based on lane
+    double yPosition = calculateLaneY(lane);
+
+    // Spawn from the opposite side of the screen
+    // Left player: obstacles come from right side
+    // Right player: obstacles come from left side
     double xPosition = side == PlayerSide.left 
-        ? size.x * 0.25 
-        : size.x * 0.75;
+        ? size.x +
+              40 // Start off right side of screen
+        : -40; // Start off left side of screen
     
-    // Spawn from top (y = 0 or slightly above)
-    Vector2 spawnPosition = Vector2(xPosition - 20, -60); // Start above screen
+    Vector2 spawnPosition = Vector2(
+      xPosition,
+      yPosition - 30,
+    ); // Center in lane
     
     Obstacle obstacle = Obstacle(
       position: spawnPosition,
-      size: Vector2(40, 60),
+      size: Vector2(60, 40), // Wider than tall (horizontal movement)
       side: side,
       gameSpeed: gameProvider?.gameSpeed ?? 1.0,
       onPlayerCollision: onPlayerCollision,
